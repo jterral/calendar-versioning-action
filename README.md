@@ -1,20 +1,6 @@
-[![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://opensource.org/licenses/MIT)
+# Calendar Versioning Action
 
-<br />
-<div align="center">
-  <h3 align="center">Calendar Versioning Action</h3>
-
-  <p align="center">
-    Simple CalVer GitHub Composite Action.
-    <br />
-    <br />
-    <a href="https://github.com/jootl-org/calendar-versioning-action/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/jootl-org/calendar-versioning-action/issues">Request Feature</a>
-  </p>
-</div>
-
-# Getting started
+> Simple CalVer GitHub Composite Action.
 
 ## Dependencies
 
@@ -33,6 +19,8 @@
 
 ## Usage
 
+Example to tag branch:
+
 ```yml
 - uses: jterral/calendar-versioning-action@v1
   with:
@@ -41,6 +29,6 @@
     commit-name: 'github-actions'
 ```
 
-# License
+## License
 
-See the [LICENSE](https://github.com/jterral/cityparkings-app/blob/mvvm/LICENSE.md) for more information.
+The scripts and documentation in this project are released under the [MIT LICENSE](https://github.com/jterral/cityparkings-app/blob/mvvm/LICENSE.md).
