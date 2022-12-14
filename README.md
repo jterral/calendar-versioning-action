@@ -1,12 +1,24 @@
 [![License](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-# Calendar Versioning Action
+<br />
+<div align="center">
+  <h3 align="center">Calendar Versioning Action</h3>
 
-Simple CalVer GitHub Composite Action.
+  <p align="center">
+    Simple CalVer GitHub Composite Action.
+    <br />
+    <br />
+    <a href="https://github.com/jootl-org/calendar-versioning-action/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/jootl-org/calendar-versioning-action/issues">Request Feature</a>
+  </p>
+</div>
+
+# Getting started
 
 ## Dependencies
 
-* [Checkout](https://github.com/actions/checkout) To checks-out your repository so the workflow can access any specified ARM template.
+* [Checkout](https://github.com/actions/checkout) To checks-out your repository so the workflow can access any tags.
 
 ## Inputs
 
