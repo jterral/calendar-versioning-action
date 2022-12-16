@@ -14,13 +14,12 @@ jobs:
   example:
     strategy:
       matrix:
-        version: [10, 12, 14]
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: jootl-org/calendar-versioning-action@v${GITHUB_REF##*/}
+      - uses: ./
         with:
           commit-tag: 'false'
