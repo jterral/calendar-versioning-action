@@ -2,10 +2,6 @@
 
 > Simple CalVer GitHub Composite Action.
 
-## Dependencies
-
-* [Checkout](https://github.com/actions/checkout) To checks-out your repository so the workflow can access any tags.
-
 ## Inputs
 
 * `commit-tag`: specify whether to commit the tag (default) or not.
@@ -19,7 +15,18 @@
 
 ## Usage
 
-Example to tag branch:
+### Requirements
+
+To run this action, you will need to set `fetch-depth: 0` to fetch all history for all branches and tags.
+
+```yml
+- name: Checkout repository
+  uses: actions/checkout@v2
+  with:
+    fetch-depth: 0 # This is a required field
+```
+
+### Example
 
 ```yml
 - uses: jterral/calendar-versioning-action@v1

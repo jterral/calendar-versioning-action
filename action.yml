@@ -28,9 +28,6 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
     - name: Generation of tag and version
       shell: bash
       id: tag-generator
