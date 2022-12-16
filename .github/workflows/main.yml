@@ -12,10 +12,7 @@ on:
 
 jobs:
   example:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.calver.outputs.tag }}
       version: ${{ steps.calver.outputs.version }}
