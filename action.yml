@@ -36,8 +36,8 @@ runs:
         minor=$(git tag -l $calver.* | wc -l)
         tag=$calver.$minor
         version=$tag+$GITHUB_RUN_NUMBER
-        echo "{tag}={$tag}" >> $GITHUB_OUTPUT
-        echo "{version}={$version}" >> $GITHUB_OUTPUT
+        echo "tag=$tag" >> $GITHUB_OUTPUT
+        echo "version={$version" >> $GITHUB_OUTPUT
         echo "Tag     => " $tag
         echo "Version => " $version
     - name: Commit and push tag
