@@ -1,0 +1,40 @@
+name: main
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "README.md"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  example:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.calver.outputs.tag }}
+      version: ${{ steps.calver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: "Calendar Versioning Action"
+        uses: ./
+        id: calver
+        with:
+          commit-tag: 'false'
+      - name: "Echo step values"
+        run: |
+          echo ${{ steps.calver.outputs.tag }}
+          echo ${{ steps.calver.outputs.version }}
+
+  usage:
+    runs-on: ubuntu-latest
+    needs: example
+    steps:
+    - name: "Echo job values"
+      run: |
+        echo ${{ needs.example.outputs.tag }}
+        echo ${{ needs.example.outputs.version }}
