@@ -42,8 +42,7 @@ runs:
       with:
         fetch-depth: 0
 
-    - name: "Generate Tag"
-      id: generate-tag
+    - id: generate-tag
       shell: bash
       env:
         INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
@@ -64,8 +63,7 @@ runs:
 
         echo "::endgroup::"
 
-    - name: "Push Tag"
-      id: push-tag
+    - id: push-tag
       shell: bash
       env:
         INPUT_COMMIT_EMAIL: ${{ inputs.commit-email }}
