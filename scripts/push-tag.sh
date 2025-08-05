@@ -3,7 +3,9 @@ set -e
 
 echo "::group::🔧 Git Config"
 git config --global user.email "${INPUT_COMMIT_EMAIL}"
+echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
 git config --global user.name "${INPUT_COMMIT_NAME}"
+echo "Configured git user name: ${INPUT_COMMIT_NAME}"
 echo "::endgroup::"
 
 echo "::group::🏷️ Tagging"

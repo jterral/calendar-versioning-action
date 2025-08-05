@@ -22,6 +22,7 @@ jobs:
           fetch-depth: 0
 
       - id: calver
+        name: Generate tag and version from example
         uses: ./
         with:
           tag-push: "false" # or "true" if you want to push the tag
@@ -29,7 +30,8 @@ jobs:
           commit-name: "github-actions[bot]" # optional commit name
           tag-prefix: "example-" # optional prefix for the tag
 
-      - run: |
+      - name: Display generated tag and version
+        run: |
           echo "Tag: ${{ steps.calver.outputs.tag }}"
           echo "Version: ${{ steps.calver.outputs.version }}"
 
@@ -37,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: versioning
     steps:
-      - run: |
+      - name: Use generated tag and version
+        run: |
           echo "Tag from previous job: ${{ needs.versioning.outputs.tag }}"
           echo "Version from previous job: ${{ needs.versioning.outputs.version }}"
