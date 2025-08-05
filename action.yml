@@ -4,7 +4,7 @@ author: "jterral"
 
 branding:
   icon: "tag"
-  color: "green"
+  color: "gray-dark"
 
 inputs:
   tag-prefix:
