@@ -7,9 +7,6 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
   versioning:
     runs-on: ubuntu-latest
@@ -22,13 +19,13 @@ jobs:
           fetch-depth: 0
 
       - id: calver
-        name: Generate tag and version from example
+        name: Calendar Versioning Action
         uses: ./
         with:
           tag-push: "false" # or "true" if you want to push the tag
+          tag-prefix: "example-" # optional prefix for the tag
           commit-email: "github-actions[bot]@users.noreply.github.com" # optional commit email
           commit-name: "github-actions[bot]" # optional commit name
-          tag-prefix: "example-" # optional prefix for the tag
 
       - name: Display generated tag and version
         run: |
