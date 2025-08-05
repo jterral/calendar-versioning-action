@@ -25,11 +25,11 @@ inputs:
 outputs:
   tag:
     description: "The generated tag (e.g., 25.32.0 or api-25.32.0)"
-    value: ${{ steps.version.outputs.tag }}
+    value: ${{ steps.calver.outputs.tag }}
 
   version:
     description: "The generated version with build number (e.g., 25.32.0+1234)"
-    value: ${{ steps.version.outputs.version }}
+    value: ${{ steps.calver.outputs.version }}
 
 runs:
   using: "composite"

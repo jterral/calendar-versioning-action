@@ -100,7 +100,7 @@ jobs:
 
 ```yaml
 - name: Generate version (no push)
-  id: version
+  id: calver
   uses: jterral/calendar-versioning-action@v2
   with:
     tag-push: 'false'
@@ -108,14 +108,14 @@ jobs:
 - name: Manual tag push
   if: github.ref == 'refs/heads/main'
   run: |
-    git push origin ${{ steps.version.outputs.tag }}
+    git push origin ${{ steps.calver.outputs.tag }}
 ```
 
 ### API Versioning with Prefix
 
 ```yaml
 - name: Generate API version
-  id: api-version
+  id: calver
   uses: jterral/calendar-versioning-action@v2
   with:
     tag-prefix: 'api-'
@@ -123,8 +123,8 @@ jobs:
 
 - name: Use the versioned API tag
   run: |
-    echo "API version: ${{ steps.api-version.outputs.tag }}"
-    echo "Full version: ${{ steps.api-version.outputs.version }}"
+    echo "API version: ${{ steps.calver.outputs.tag }}"
+    echo "Full version: ${{ steps.calver.outputs.version }}"
 ```
 
 ### Docker Image Tagging
