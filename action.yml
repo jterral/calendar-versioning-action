@@ -25,11 +25,11 @@ inputs:
 outputs:
   tag:
     description: "The generated tag (e.g., 25.32.0 or api-25.32.0)"
-    value: ${{ steps.calver.outputs.tag }}
+    value: ${{ steps.generate-tag.outputs.tag }}
 
   version:
     description: "The generated version with build number (e.g., 25.32.0+1234)"
-    value: ${{ steps.calver.outputs.version }}
+    value: ${{ steps.generate-tag.outputs.version }}
 
 runs:
   using: "composite"
@@ -38,29 +38,26 @@ runs:
       with:
         fetch-depth: 0
 
-    - name: Generate tag and version
-      id: calver
+    - id: generate-tag
       shell: bash
-      run: generate-version.sh
       env:
         INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
-      # run: |
-      #   set -e
-      #   echo "::group::🔖 Versioning"
+      run: |
+        echo "::group::🔖 Versioning"
 
-      #   calver=$(date +'%y.%U')
-      #   minor=$(git tag -l "$calver.*" | sort -V | wc -l)
-      #   tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
-      #   version="${tag}+${GITHUB_RUN_NUMBER}"
+        calver=$(date +'%y.%U')
+        minor=$(git tag -l "$calver.*" | sort -V | wc -l)
+        tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
+        version="${tag}+${GITHUB_RUN_NUMBER}"
 
-      #   echo "tag=$tag" >> "$GITHUB_OUTPUT"
-      #   echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "tag=$tag" >> $GITHUB_OUTPUT
+        echo "version=$version" >> $GITHUB_OUTPUT
 
-      #   echo "Generated tag: $tag"
-      #   echo "Generated version: $version"
+        echo "Generated tag: $tag"
+        echo "Generated version: $version"
 
-      #   echo "::endgroup::"
+        echo "::endgroup::"
 
     - id: push-tag
       shell: bash
@@ -69,31 +66,29 @@ runs:
         INPUT_COMMIT_EMAIL: ${{ inputs.commit-email }}
         INPUT_COMMIT_NAME: ${{ inputs.commit-name }}
         INPUT_PUSH_TAG: ${{ inputs.tag-push }}
-        TAG: ${{ steps.calver.outputs.tag }}
-        VERSION: ${{ steps.calver.outputs.version }}
-      # run: |
-      #   set -e
+        TAG: ${{ steps.generate-tag.outputs.tag }}
+        VERSION: ${{ steps.generate-tag.outputs.version }}
+      run: |
+        echo "::group::🔧 Git Config"
+        git config --global user.email "${INPUT_COMMIT_EMAIL}"
+        echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
+        git config --global user.name "${INPUT_COMMIT_NAME}"
+        echo "Configured git user name: ${INPUT_COMMIT_NAME}"
+        echo "::endgroup::"
 
-      #   echo "::group::🔧 Git Config"
-      #   git config --global user.email "${INPUT_COMMIT_EMAIL}"
-      #   echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
-      #   git config --global user.name "${INPUT_COMMIT_NAME}"
-      #   echo "Configured git user name: ${INPUT_COMMIT_NAME}"
-      #   echo "::endgroup::"
+        echo "::group::🏷️ Tagging"
+        git tag -a "$TAG" -m "$VERSION"
+        echo "Created tag $TAG"
+        echo "::endgroup::"
 
-      #   echo "::group::🏷️ Tagging"
-      #   git tag -a "$TAG" -m "$VERSION"
-      #   echo "Created tag $TAG"
-      #   echo "::endgroup::"
-
-      #   if [[ "$INPUT_PUSH_TAG" == "true" ]]; then
-      #     echo "::group::🚀 Pushing tag"
-      #     git push origin "$TAG" || {
-      #       echo "::error::❌ Failed to push tag '$TAG'. Check permissions or token scope."
-      #       exit 1
-      #     }
-      #     echo "✅ Tag $TAG pushed to origin"
-      #     echo "::endgroup::"
-      #   else
-      #     echo "🧪 push-tag=false → skipping push of $TAG"
-      #   fi
+        if [[ "$INPUT_PUSH_TAG" == "true" ]]; then
+          echo "::group::🚀 Pushing tag"
+          git push origin "$TAG" || {
+            echo "::error::❌ Failed to push tag '$TAG'. Check permissions or token scope."
+            exit 1
+          }
+          echo "✅ Tag $TAG pushed to origin"
+          echo "::endgroup::"
+        else
+          echo "🧪 push-tag=false → skipping push of $TAG"
+        fi
