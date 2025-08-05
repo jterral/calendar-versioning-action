@@ -1,5 +1,5 @@
-name: "Calendar Versioning"
-description: "Simple CalVer GitHub Composite Action."
+name: "Git CalVer Generator"
+description: "Simple GitHub Action to generate Git tags using Calendar Versioning (CalVer)."
 author: "jterral"
 
 branding:
