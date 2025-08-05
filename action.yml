@@ -41,7 +41,7 @@ runs:
     - name: Generate tag and version
       id: calver
       shell: bash
-      run: scripts/generate-version.sh
+      run: generate-version.sh
       env:
         INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
