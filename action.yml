@@ -1,5 +1,9 @@
 name: "Calendar Versioning"
 description: "Simple CalVer GitHub Composite Action."
+author: "jterral"
+branding:
+  icon: "tag"
+  color: "green"
 
 inputs:
   tag-prefix:
