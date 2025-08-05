@@ -1,50 +1,57 @@
-name: 'Calendar Versioning'
-description: 'Simple CalVer GitHub Composite Action.'
+name: "Calendar Versioning"
+description: "Simple CalVer GitHub Composite Action."
 
 inputs:
-  commit-tag:
-    description: 'Indicate wether to commit tag or not, default to true.'
+  tag-prefix:
+    description: "Optional prefix for the tag. Example: 'api-'. Default: empty"
     required: false
-    default: 'true'
+    default: ""
+
+  tag-push:
+    description: "Whether to push the tag to the remote. Default: false"
+    required: false
+    default: "false"
 
   commit-email:
-    description: 'The user email to commit tag, default to github-actions@github.com.'
+    description: "Git commit email. Default: github-actions[bot]@users.noreply.github.com"
     required: false
-    default: 'github-actions@github.com'
+    default: "github-actions[bot]@users.noreply.github.com"
 
   commit-name:
-    description: 'The user name to commit tag, default to github-actions.'
+    description: "Git commit name. Default: github-actions[bot]"
     required: false
-    default: 'github-actions'
+    default: "github-actions[bot]"
 
 outputs:
   tag:
-    description: 'The generated tag.'
-    value: ${{ steps.tag-generator.outputs.tag }}
+    description: "The generated tag (e.g., 25.32.0 or api-25.32.0)"
+    value: ${{ steps.version.outputs.tag }}
+
   version:
-    description: 'The tag suffixed by build number.'
-    value: ${{ steps.tag-generator.outputs.version }}
+    description: "The generated version with build number (e.g., 25.32.0+1234)"
+    value: ${{ steps.version.outputs.version }}
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
-    - name: Generation of tag and version
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate tag and version
+      id: calver
       shell: bash
-      id: tag-generator
-      run: |
-        calver=$(date +'%y.%U')
-        minor=$(git tag -l $calver.* | wc -l)
-        tag=$calver.$minor
-        version=$tag+$GITHUB_RUN_NUMBER
-        echo "tag=$tag" >> $GITHUB_OUTPUT
-        echo "version=$version" >> $GITHUB_OUTPUT
-        echo "Tag     => " $tag
-        echo "Version => " $version
-    - name: Commit and push tag
+      run: scripts/generate-version.sh
+      env:
+        INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+
+    - name: Push tag (if tag-push is true)
       shell: bash
-      if: inputs.commit-tag == 'true'
-      run: |
-        git config --global user.email ${{ inputs.commit-email }}
-        git config --global user.name ${{ inputs.commit-name }}
-        git tag -a ${{ steps.tag-generator.outputs.tag }} -m ${{ steps.tag-generator.outputs.version }}
-        git push origin ${{ steps.tag-generator.outputs.tag }}
+      run: scripts/push-tag.sh
+      env:
+        INPUT_COMMIT_EMAIL: ${{ inputs.commit-email }}
+        INPUT_COMMIT_NAME: ${{ inputs.commit-name }}
+        INPUT_PUSH_TAG: ${{ inputs.tag-push }}
+        TAG: ${{ steps.calver.outputs.tag }}
+        VERSION: ${{ steps.calver.outputs.version }}
