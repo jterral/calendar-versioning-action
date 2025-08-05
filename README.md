@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Generate CalVer tag
         id: calver
-        uses: jterral/calendar-versioning-action@v2
+        uses: jterral/calendar-versioning-action@v1
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -62,7 +62,7 @@ jobs:
 
 ```yaml
 - name: Generate CalVer tag with prefix
-  uses: jterral/calendar-versioning-action@v2
+  uses: jterral/calendar-versioning-action@v1
   with:
     tag-prefix: 'api-'
     tag-push: 'true'
@@ -101,7 +101,7 @@ jobs:
 ```yaml
 - name: Generate version (no push)
   id: calver
-  uses: jterral/calendar-versioning-action@v2
+  uses: jterral/calendar-versioning-action@v1
   with:
     tag-push: 'false'
 
@@ -116,7 +116,7 @@ jobs:
 ```yaml
 - name: Generate API version
   id: calver
-  uses: jterral/calendar-versioning-action@v2
+  uses: jterral/calendar-versioning-action@v1
   with:
     tag-prefix: 'api-'
     tag-push: 'true'
@@ -132,7 +132,7 @@ jobs:
 ```yaml
 - name: Generate CalVer
   id: calver
-  uses: jterral/calendar-versioning-action@v2
+  uses: jterral/calendar-versioning-action@v1
 
 - name: Build and push Docker image
   run: |
