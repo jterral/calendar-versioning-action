@@ -41,10 +41,25 @@ runs:
     - name: Generate tag and version
       id: calver
       shell: bash
-      run: scripts/generate-version.sh
+      # run: scripts/generate-version.sh
       env:
         INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
+      run: |
+        echo "::group::🔖 Versioning"
+
+        calver=$(date +'%y.%U')
+        minor=$(git tag -l "$calver.*" | sort -V | wc -l)
+        tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
+        version="${tag}+${GITHUB_RUN_NUMBER}"
+
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+
+        echo "Generated tag: $tag"
+        echo "Generated version: $version"
+
+        echo "::endgroup::"
 
     - name: Push tag (if tag-push is true)
       shell: bash
