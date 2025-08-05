@@ -1,7 +1,7 @@
-# 📅 Calendar Versioning Action
+# 📅 Git CalVer Generator
 
 [![GitHub release](https://img.shields.io/github/release/jterral/calendar-versioning-action.svg)](https://github.com/jterral/calendar-versioning-action/releases)
-[![GitHub marketplace](https://img.shields.io/badge/marketplace-calendar--versioning--action-blue?logo=github)](https://github.com/marketplace/actions/calendar-versioning-action)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-git--calver--generator-blue?logo=github)](https://github.com/marketplace/actions/git-calver-generator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Effortlessly implement Calendar Versioning (CalVer) in your GitHub workflows!** 🚀
