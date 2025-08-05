@@ -1,41 +1,162 @@
-# Calendar Versioning Action
+# 📅 Calendar Versioning Action
 
-> Simple CalVer GitHub Composite Action.
+[![GitHub release](https://img.shields.io/github/release/jterral/calendar-versioning-action.svg)](https://github.com/jterral/calendar-versioning-action/releases)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-calendar--versioning--action-blue?logo=github)](https://github.com/marketplace/actions/calendar-versioning-action)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Inputs
+**Effortlessly implement Calendar Versioning (CalVer) in your GitHub workflows!** 🚀
 
-* `commit-tag`: specify whether to commit the tag (default) or not.
-* `commit-email`: specify the commit user email, default to `github-actions@github.com`.
-* `commit-name`: specify the commit user name, default to `github-actions`.
+This GitHub Action automatically generates time-based version tags following the CalVer format.
 
-## Outputs
+## ✨ Features
 
-* `tag`: generated with the year and the week number, followed by the count of same tag, example `22.42.0` for first tag and `22.42.1` for next tag.
-* `version`: built with tag suffixed by unique build number, for example `22.42.0+1234`.
+- **🔄 Automatic Version Generation**: Creates CalVer tags based on year and week number
+- **📈 Incremental Releases**: Handles multiple releases in the same week with automatic incrementing
+- **🎯 Zero Configuration**: Works out of the box with sensible defaults
+- **🔧 Flexible Options**: Customize commit behavior and user information
+- **⚡ Lightweight**: Composite action with minimal overhead
+- **📊 Dual Output**: Provides both clean tags and build-numbered versions
 
-## Usage
+## 🏷️ Version Format
 
-### Requirements
+This action generates versions in the format: `YY.WW.PATCH`
 
-To run this action, you will need to set `fetch-depth: 0` to fetch all history for all branches and tags.
+- **YY**: Last two digits of the current year
+- **WW**: Week number of the year (00-53)
+- **PATCH**: Incremental number for releases within the same week
 
-```yml
-- name: Checkout repository
-  uses: actions/checkout@v2
-  with:
-    fetch-depth: 0 # This is a required field
+**Examples:**
+
+- First release of week 42 in 2025: `25.42.0`
+- Second release of the same week: `25.42.1`
+- With build number: `25.42.1+1234`
+
+## 🚀 Quick Start
+
+### Step 1: Setup Your Workflow
+
+```yaml
+name: Release
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate CalVer tag
+        id: calver
+        uses: jterral/calendar-versioning-action@v2
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.calver.outputs.tag }}
+          release_name: Release ${{ steps.calver.outputs.version }}
 ```
 
-### Example
+### Step 2: Customize (Optional)
 
-```yml
-- uses: jterral/calendar-versioning-action@v1
+```yaml
+- name: Generate CalVer tag with prefix
+  uses: jterral/calendar-versioning-action@v2
   with:
-    commit-tag: 'true'
-    commit-email: 'github-actions@github.com'
-    commit-name: 'github-actions'
+    tag-prefix: 'api-'
+    tag-push: 'true'
+    commit-email: 'bot@mycompany.com'
+    commit-name: 'Release Bot'
 ```
 
-## License
+## 📋 Inputs
 
-The scripts and documentation in this project are released under the [MIT LICENSE](https://github.com/jterral/cityparkings-app/blob/mvvm/LICENSE.md).
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `tag-prefix` | Optional prefix for the tag (e.g., 'api-') | No | `""` (empty) |
+| `tag-push` | Whether to push the tag to the remote repository | No | `false` |
+| `commit-email` | Git user email for tag commits | No | `github-actions[bot]@users.noreply.github.com` |
+| `commit-name` | Git user name for tag commits | No | `github-actions[bot]` |
+
+## 📤 Outputs
+
+| Output | Description | Example |
+|--------|-------------|---------|
+| `tag` | The generated CalVer tag (with prefix if specified) | `25.42.1` or `api-25.42.1` |
+| `version` | Tag with build number suffix | `25.42.1+1234` |
+
+## 💡 Use Cases
+
+- **🏢 Enterprise Applications**: Predictable versioning for business applications
+- **📱 Mobile Apps**: Clear release cycles tied to calendar weeks
+- **🌐 Web Services**: API versioning that correlates with deployment schedules
+- **📦 Library Releases**: Time-based versioning for regular maintenance releases
+- **🔄 Continuous Deployment**: Automated versioning for CD pipelines
+
+## 🛠️ Advanced Usage
+
+### Conditional Tagging
+
+```yaml
+- name: Generate version (no push)
+  id: calver
+  uses: jterral/calendar-versioning-action@v2
+  with:
+    tag-push: 'false'
+
+- name: Manual tag push
+  if: github.ref == 'refs/heads/main'
+  run: |
+    git push origin ${{ steps.calver.outputs.tag }}
+```
+
+### API Versioning with Prefix
+
+```yaml
+- name: Generate API version
+  id: calver
+  uses: jterral/calendar-versioning-action@v2
+  with:
+    tag-prefix: 'api-'
+    tag-push: 'true'
+
+- name: Use the versioned API tag
+  run: |
+    echo "API version: ${{ steps.calver.outputs.tag }}"
+    echo "Full version: ${{ steps.calver.outputs.version }}"
+```
+
+### Docker Image Tagging
+
+```yaml
+- name: Generate CalVer
+  id: calver
+  uses: jterral/calendar-versioning-action@v2
+
+- name: Build and push Docker image
+  run: |
+    docker build -t myapp:${{ steps.calver.outputs.tag }} .
+    docker build -t myapp:${{ steps.calver.outputs.version }} .
+    docker push myapp:${{ steps.calver.outputs.tag }}
+    docker push myapp:${{ steps.calver.outputs.version }}
+```
+
+## ⚠️ Requirements
+
+- **Git Repository**: The action automatically checks out the repository with full history (`fetch-depth: 0`)
+- **Write Permissions**: If using `tag-push: true`, make sure your [workflow has `contents: write` permission](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs).
+
+## 🤝 Contributing
+
+We welcome contributions! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) - see the LICENSE file for details.
+
+## ⭐ Support
+
+If this action helped you, please consider giving it a star! ⭐
+
+Found a bug or have a feature request? [Open an issue](https://github.com/jterral/calendar-versioning-action/issues) - we're here to help!

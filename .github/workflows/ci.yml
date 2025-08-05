@@ -1,0 +1,42 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.calver.outputs.tag }}
+      version: ${{ steps.calver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: calver
+        name: Calendar Versioning Action
+        uses: ./
+        with:
+          tag-push: "false" # or "true" if you want to push the tag
+          tag-prefix: "example-" # optional prefix for the tag
+          commit-email: "github-actions[bot]@users.noreply.github.com" # optional commit email
+          commit-name: "github-actions[bot]" # optional commit name
+
+      - name: Display generated tag and version
+        run: |
+          echo "Tag: ${{ steps.calver.outputs.tag }}"
+          echo "Version: ${{ steps.calver.outputs.version }}"
+
+  usage:
+    runs-on: ubuntu-latest
+    needs: versioning
+    steps:
+      - name: Use generated tag and version
+        run: |
+          echo "Tag from previous job: ${{ needs.versioning.outputs.tag }}"
+          echo "Version from previous job: ${{ needs.versioning.outputs.version }}"
