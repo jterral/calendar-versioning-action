@@ -1,38 +1,39 @@
 name: "Calendar Versioning"
 description: "Simple CalVer GitHub Composite Action."
 author: "jterral"
+
 branding:
   icon: "tag"
   color: "green"
 
 inputs:
   tag-prefix:
-    description: "Optional prefix for the tag. Example: 'api-'. Default: empty"
+    description: "Optional prefix for the tag (e.g., 'api-'). Default: empty."
     required: false
     default: ""
 
   tag-push:
-    description: "Whether to push the tag to the remote. Default: false"
+    description: "If true, the tag will be pushed to the remote repository."
     required: false
     default: "false"
 
   commit-email:
-    description: "Git commit email. Default: github-actions[bot]@users.noreply.github.com"
+    description: "Email used for the git tag commit."
     required: false
     default: "github-actions[bot]@users.noreply.github.com"
 
   commit-name:
-    description: "Git commit name. Default: github-actions[bot]"
+    description: "Name used for the git tag commit."
     required: false
     default: "github-actions[bot]"
 
 outputs:
   tag:
-    description: "The generated tag (e.g., 25.32.0 or api-25.32.0)"
+    description: "Generated tag (e.g., 25.32.0 or api-25.32.0)."
     value: ${{ steps.generate-tag.outputs.tag }}
 
   version:
-    description: "The generated version with build number (e.g., 25.32.0+1234)"
+    description: "Generated version with build number (e.g., 25.32.0+1234)."
     value: ${{ steps.generate-tag.outputs.version }}
 
 runs:
@@ -51,12 +52,12 @@ runs:
         echo "::group::🔖 Versioning"
 
         calver=$(date +'%y.%U')
-        minor=$(git tag -l "$calver.*" | sort -V | wc -l)
+        minor=$(git tag -l "${INPUT_TAG_PREFIX}${calver}.*" | sort -V | wc -l)
         tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
         version="${tag}+${GITHUB_RUN_NUMBER}"
 
-        echo "tag=$tag" >> $GITHUB_OUTPUT
-        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
 
         echo "Generated tag: $tag"
         echo "Generated version: $version"
@@ -74,24 +75,23 @@ runs:
       run: |
         echo "::group::🔧 Git Config"
         git config --global user.email "${INPUT_COMMIT_EMAIL}"
-        echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
         git config --global user.name "${INPUT_COMMIT_NAME}"
-        echo "Configured git user name: ${INPUT_COMMIT_NAME}"
+        echo "Configured git as ${INPUT_COMMIT_NAME} <${INPUT_COMMIT_EMAIL}>"
         echo "::endgroup::"
 
         echo "::group::🏷️ Tagging"
         git tag -a "$TAG" -m "$VERSION"
-        echo "Created tag $TAG"
+        echo "Created tag: $TAG"
         echo "::endgroup::"
 
         if [[ "$INPUT_PUSH_TAG" == "true" ]]; then
           echo "::group::🚀 Pushing tag"
           git push origin "$TAG" || {
-            echo "::error::❌ Failed to push tag '$TAG'. Check permissions or token scope."
+            echo "::error::❌ Failed to push tag '$TAG'. Check your PAT permissions."
             exit 1
           }
           echo "✅ Tag $TAG pushed to origin"
           echo "::endgroup::"
         else
-          echo "🧪 push-tag=false → skipping push of $TAG"
+          echo "🧪 Skipping tag push (tag-push=false)"
         fi

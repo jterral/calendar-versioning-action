@@ -6,7 +6,7 @@
 
 **Effortlessly implement Calendar Versioning (CalVer) in your GitHub workflows!** 🚀
 
-This powerful GitHub Action automatically generates semantic, time-based version tags following the CalVer specification. Perfect for continuous deployment pipelines where you want predictable, chronological versioning that makes sense at a glance.
+This GitHub Action automatically generates time-based version tags following the CalVer format.
 
 ## ✨ Features
 
@@ -145,7 +145,7 @@ jobs:
 ## ⚠️ Requirements
 
 - **Git Repository**: The action automatically checks out the repository with full history (`fetch-depth: 0`)
-- **Write Permissions**: If using `tag-push: true`, ensure your workflow has permission to push tags to the repository
+- **Write Permissions**: If using `tag-push: true`, make sure your [workflow has `contents: write` permission](https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs).
 
 ## 🤝 Contributing
 
