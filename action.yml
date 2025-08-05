@@ -41,59 +41,59 @@ runs:
     - name: Generate tag and version
       id: calver
       shell: bash
-      # run: scripts/generate-version.sh
+      run: scripts/generate-version.sh
       env:
         INPUT_TAG_PREFIX: ${{ inputs.tag-prefix }}
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
-      run: |
-        set -e
-        echo "::group::🔖 Versioning"
+      # run: |
+      #   set -e
+      #   echo "::group::🔖 Versioning"
 
-        calver=$(date +'%y.%U')
-        minor=$(git tag -l "$calver.*" | sort -V | wc -l)
-        tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
-        version="${tag}+${GITHUB_RUN_NUMBER}"
+      #   calver=$(date +'%y.%U')
+      #   minor=$(git tag -l "$calver.*" | sort -V | wc -l)
+      #   tag="${INPUT_TAG_PREFIX}${calver}.${minor}"
+      #   version="${tag}+${GITHUB_RUN_NUMBER}"
 
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
-        echo "version=$version" >> "$GITHUB_OUTPUT"
+      #   echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      #   echo "version=$version" >> "$GITHUB_OUTPUT"
 
-        echo "Generated tag: $tag"
-        echo "Generated version: $version"
+      #   echo "Generated tag: $tag"
+      #   echo "Generated version: $version"
 
-        echo "::endgroup::"
+      #   echo "::endgroup::"
 
-    - name: Push tag (if tag-push is true)
+    - id: push-tag
       shell: bash
-      # run: scripts/push-tag.sh
+      run: scripts/push-tag.sh
       env:
         INPUT_COMMIT_EMAIL: ${{ inputs.commit-email }}
         INPUT_COMMIT_NAME: ${{ inputs.commit-name }}
         INPUT_PUSH_TAG: ${{ inputs.tag-push }}
         TAG: ${{ steps.calver.outputs.tag }}
         VERSION: ${{ steps.calver.outputs.version }}
-      run: |
-        set -e
+      # run: |
+      #   set -e
 
-        echo "::group::🔧 Git Config"
-        git config --global user.email "${INPUT_COMMIT_EMAIL}"
-        echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
-        git config --global user.name "${INPUT_COMMIT_NAME}"
-        echo "Configured git user name: ${INPUT_COMMIT_NAME}"
-        echo "::endgroup::"
+      #   echo "::group::🔧 Git Config"
+      #   git config --global user.email "${INPUT_COMMIT_EMAIL}"
+      #   echo "Configured git user email: ${INPUT_COMMIT_EMAIL}"
+      #   git config --global user.name "${INPUT_COMMIT_NAME}"
+      #   echo "Configured git user name: ${INPUT_COMMIT_NAME}"
+      #   echo "::endgroup::"
 
-        echo "::group::🏷️ Tagging"
-        git tag -a "$TAG" -m "$VERSION"
-        echo "Created tag $TAG"
-        echo "::endgroup::"
+      #   echo "::group::🏷️ Tagging"
+      #   git tag -a "$TAG" -m "$VERSION"
+      #   echo "Created tag $TAG"
+      #   echo "::endgroup::"
 
-        if [[ "$INPUT_PUSH_TAG" == "true" ]]; then
-          echo "::group::🚀 Pushing tag"
-          git push origin "$TAG" || {
-            echo "::error::❌ Failed to push tag '$TAG'. Check permissions or token scope."
-            exit 1
-          }
-          echo "✅ Tag $TAG pushed to origin"
-          echo "::endgroup::"
-        else
-          echo "🧪 push-tag=false → skipping push of $TAG"
-        fi
+      #   if [[ "$INPUT_PUSH_TAG" == "true" ]]; then
+      #     echo "::group::🚀 Pushing tag"
+      #     git push origin "$TAG" || {
+      #       echo "::error::❌ Failed to push tag '$TAG'. Check permissions or token scope."
+      #       exit 1
+      #     }
+      #     echo "✅ Tag $TAG pushed to origin"
+      #     echo "::endgroup::"
+      #   else
+      #     echo "🧪 push-tag=false → skipping push of $TAG"
+      #   fi
